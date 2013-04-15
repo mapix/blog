@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" type="text/css" href="./theme/css/style.css">
+	<!--<link rel="stylesheet/less" type="text/css" href="/theme/css/style.less">-->
+	<!--<script src="/theme/js/less.js" type="text/javascript"></script>-->
+	<link rel="stylesheet" type="text/css" href="./theme/css/pygments.css">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:800,400,300|Inconsolata' rel='stylesheet' type='text/css'>
+
+	<link href="http://qingchen.me/" type="application/atom+xml" rel="alternate" title="qingchen ATOM Feed" />
+	
+	
+			<title>qingchen</title>
+		<meta charset="utf-8" />
+	</head>
+<body>
+	<section id="sidebar">
+		<figure id="user_logo">
+            <a href="."><div class="logo">&nbsp;</div></a>
+		</figure>
+
+		<div class="user_meta">
+            <h1 id="user"><a href="." class="">qingchen</a></h1>
+			<h2></h2>
+						<p class="bio">=====dev@douban=====</p>
+						<ul>
+																			<li><a href="./pages/about_site.html">About</a></li>
+																		<li><a href="http://douban.com/people/qingchenzhuoshu/">豆瓣</a></li>
+									<li><a href="https://github.com/qingchen">github</a></li>
+							</ul>
+		</div>
+		<footer>
+			<address>
+				Powered by <a href="http://pelican.notmyidea.org/">Pelican</a>,
+		                theme by <a href="https://github.com/wting/pelican-svbtle">wting</a>.
+			</address>
+		</footer>
+	</section>
+
+	<section id="posts">
+			<header>
+		<h1>qingchen's blog</h1>
+		<h3>Posted Apr 14, 2013</h3>
+	</header>
+	<article>
+		<h1 id="title">
+			<a href="./webpage_encoding_test.html" rel="bookmark"
+				title="Permalink to WebPage Encoding Test">WebPage Encoding Test</a>
+		</h1>
+		<p>很多时候我们从搜索引擎跳转到一个新的站点的时候站点会作出一些站内引导，引导的方式其中有一类就是抓取搜索引擎的关键词，然后根据关键词引导，这个时候在跨站操作的过程中就出现了编码问题，以至于一些时候我们看到的引导词是乱码的，在这种情况下，网站要想更好的引导用户，就需要尽最大可能的处理好encoding的问题。而从web传递进来的字符本身是没有任何编码信息的，真实的编码信息由于OS和WebBrowser的不同而不同，这个时候其实就需要有个选择的过程。</p>
+<p>首先，需要明确自己网站的编码是什么，现如今大部分是UTF-8，当然不乏一些大网站还是用的GBK，下面使用Python演示一下自动处理这个问题的一些代码片段, 应该根据自己站点用户使用浏览器，OS的情况稍微做一些调查，然后列出一个可用的列表，原则上，排第一个的应该是站点自己的编码，其次是多字节的编码，然后是单字节编码，其中类似Latin1这种编码，占据全部8位的空间，所以需要放在最后一位，因为对它来说，什么都是编码正确的。</p>
+<div class="codehilite"><pre><span class="n">CHARSETS</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;utf-8&#39;</span><span class="p">,</span>                  <span class="c"># Unicode多语言</span>
+  <span class="s">&#39;gbk&#39;</span><span class="p">,</span> <span class="s">&#39;gb18030&#39;</span><span class="p">,</span>         <span class="c"># 简体中文 </span>
+  <span class="s">&#39;big5&#39;</span><span class="p">,</span>                   <span class="c"># 繁体中文， 台湾香港澳门</span>
+  <span class="s">&#39;EUC_KR&#39;</span><span class="p">,</span>                 <span class="c"># 韩语</span>
+  <span class="s">&#39;EUC_JP&#39;</span><span class="p">,</span> <span class="s">&#39;Shift_JIS&#39;</span><span class="p">,</span>    <span class="c"># 日语</span>
+  <span class="s">&#39;KOI8-R&#39;</span><span class="p">,</span> <span class="s">&#39;Windows-1251&#39;</span><span class="p">,</span> <span class="c"># 俄语</span>
+  <span class="s">&#39;iso-8859-5&#39;</span><span class="p">,</span>             <span class="c"># 斯拉夫语系(保加利亚语,Byelorussian语,马其顿语,俄语,塞尔维亚语,乌克兰语等)</span>
+  <span class="s">&#39;iso-8859-2&#39;</span><span class="p">,</span>             <span class="c"># 中欧语系</span>
+  <span class="s">&#39;iso-8859-1&#39;</span><span class="p">,</span>             <span class="c"># 西欧语系(荷兰语,英语,法语,德语,意大利语,挪威语,葡萄牙语,瑞士语.等十八种语言), Latin1 </span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>处理的逻辑很简单，就是遍历之前的这个决策列表，除非有解码异常，否则就认为识别编码。</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="nf">detect_charset</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;事实上，一个rawstr 过来是无法确定它是什么东西的， It all depends&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">charset</span> <span class="ow">in</span> <span class="n">CHARSETS</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>  
+                <span class="k">return</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">s</span>
+</pre></div>
+
+
+<p>这里你可能想到了chardet等专门用于探测字符编码的库来完成，但是这些基于规则的探测库只有在大量输入的情况下才能形成统计结论，而对于这种一个两个搜索词的缺毫无办法。函数完成了，就需要看到对其进行一个测试了，这里使用Python的标准库模拟从百度过来一个搜索:</p>
+<div class="codehilite"><pre><span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="n">referer</span> <span class="o">=</span> <span class="s">&quot;http://www.baidu.com/s?wd=Hello&amp;rsv_spt=1&amp;issp=1&amp;rsv_bp=0&amp;ie=utf-8&amp;tn=baiduhome_pg&amp;rsv_sug3=3&quot;</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="o">&lt;</span><span class="n">origin_url</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">&#39;Referer&#39;</span><span class="p">,</span> <span class="n">referer</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+
+
+<p>这样通过这个web地址就可以对页面识别搜索引擎关键词做出模拟，而在这里的wd参数也可替换成自己需要的编码，例如：</p>
+<div class="codehilite"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="s">u&#39;你好&#39;</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;gbk&#39;</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="s">&#39;</span><span class="se">\xc4\xe3\xba\xc3</span><span class="s">&#39;</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="s">&#39;</span><span class="se">\xe4\xbd\xa0\xe5\xa5\xbd</span><span class="s">&#39;</span>
+</pre></div>
+
+
+<p>需要测试其他编码的时候只需要将上面得到的编码后的字符替换上面的Hello就可以了。</p>
+<p>还有一个手动测试编码的好方法，以豆瓣小组匿名引导为例，步骤如下:</p>
+<ol>
+<li>Firefox 匿名状态下打开豆瓣搜索页面，注意在豆瓣搜索页面有个搜索的Form;</li>
+<li>更改这个页面的编码为你需要测试的编码，这个时候Form要处理的编码会随着你的设定而走;</li>
+<li>在乱码的网页那个搜索Form里边输入需要测试的搜索词<code>你好</code>, 点击提交; </li>
+<li>这个时候结果页是编码正常的，也能顺利搜索到内容，但搜索框里边的搜索词与你搜索的<code>你好</code>又相去甚远，不过不用沮丧，因为你已经得到了一个你设定编码的reffer了;</li>
+<li>在这个页面点击搜索出来的小组，小组会弹出匿名引导框，这个时候再看匿名引导框上的文字<code>你好</code>又好了;</li>
+</ol>
+<p>这个过程其实就是应用到了之前说过的那个多级解码的函数了， 第4步的时候其实我们是获取了一个可用的需要测试编码内容的reffer了，再进入下一个页面的时候，会自带reffer信息，就被这个函数成功处理了。</p>
+
+		<div id="article_meta">
+							Category:
+					<a href="./category/test.html">Test</a>
+										<br />Tags:
+									<a href="./tag/test.html">Test</a>
+									<a href="./tag/encoding.html">Encoding</a>
+									<a href="./tag/python.html">Python</a>
+									</div>
+	</article>
+
+	<footer>
+		<a href="./" class="button_accent">&larr;&nbsp;&nbsp;&nbsp;Back to blog</a>
+	</footer>
+
+	
+	</section>
+
+	</body>
+</html>

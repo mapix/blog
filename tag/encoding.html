@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" type="text/css" href="../theme/css/style.css">
+	<!--<link rel="stylesheet/less" type="text/css" href="/theme/css/style.less">-->
+	<!--<script src="/theme/js/less.js" type="text/javascript"></script>-->
+	<link rel="stylesheet" type="text/css" href="../theme/css/pygments.css">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:800,400,300|Inconsolata' rel='stylesheet' type='text/css'>
+
+	<link href="http://qingchen.me/" type="application/atom+xml" rel="alternate" title="qingchen ATOM Feed" />
+	
+	
+			<title>qingchen - Encoding</title>
+		<meta charset="utf-8" />
+	</head>
+<body>
+	<section id="sidebar">
+		<figure id="user_logo">
+            <a href=".."><div class="logo">&nbsp;</div></a>
+		</figure>
+
+		<div class="user_meta">
+            <h1 id="user"><a href=".." class="">qingchen</a></h1>
+			<h2></h2>
+						<p class="bio">=====dev@douban=====</p>
+						<ul>
+																			<li><a href="../pages/about_site.html">About</a></li>
+																		<li><a href="http://douban.com/people/qingchenzhuoshu/">豆瓣</a></li>
+									<li><a href="https://github.com/qingchen">github</a></li>
+							</ul>
+		</div>
+		<footer>
+			<address>
+				Powered by <a href="http://pelican.notmyidea.org/">Pelican</a>,
+		                theme by <a href="https://github.com/wting/pelican-svbtle">wting</a>.
+			</address>
+		</footer>
+	</section>
+
+	<section id="posts">
+			<header>
+		<h1>qingchen's blog</h1>
+		<h3>
+			<script type="text/javascript">
+				var currentDate = new Date();
+				var day = currentDate.getDate();
+				var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+				var month = monthNames[currentDate.getMonth()].toUpperCase();
+				var year = currentDate.getFullYear();
+				document.write(month + " " + day + ", " + year);
+			</script>
+		</h3>
+	</header>
+
+	<dl>
+		<ol>
+							<li>
+					<h1 class="title">
+						<a href="../webpage_encoding_test.html" rel="bookmark" title="Permalink to WebPage Encoding Test">WebPage Encoding Test</a>
+					</h1>
+					<abbr class="published" title="2013-04-14T23:50:00">Apr 14, 2013</abbr>
+				<div class="entry-content"> <p>很多时候我们从搜索引擎跳转到一个新的站点的时候站点会作出一些站内引导，引导的方式其中有一类就是抓取搜索引擎的关键词，然后根据关键词引导，这个时候在跨站操作的过程中就出现了编码问题，以至于一些时候我们看到的引导词是乱码的，在这种情况下，网站要想更好的引导用户，就需要尽最大可能的处理好encoding的问题。而从web传递进来的字符本身是没有任何编码信息的，真实的编码信息由于OS和WebBrowser的不同而不同，这个时候其实就需要有个选择的过程。</p>
+<p>首先，需要明确自己网站的编码是什么，现如今大部分是UTF-8，当然不乏一些大网站还是用的GBK，下面使用Python演示一下自动处理这个问题的一些代码片段, 应该根据自己站点用户使用浏览器，OS的情况稍微做一些调查，然后列出一个可用的列表，原则上，排第一个的应该是站点自己的编码，其次是多字节的编码，然后是单字节编码，其中类似Latin1这种编码，占据全部8位的空间，所以需要放在最后一位，因为对它来说，什么都是编码正确的。</p>
+<div class="codehilite"><pre><span class="n">CHARSETS</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="s">&#39;utf-8&#39;</span><span class="p">,</span>                  <span class="c"># Unicode多语言</span>
+  <span class="s">&#39;gbk&#39;</span><span class="p">,</span> <span class="s">&#39;gb18030&#39;</span><span class="p">,</span>         <span class="c"># 简体中文 </span>
+  <span class="s">&#39;big5&#39;</span><span class="p">,</span>                   <span class="c"># 繁体中文， 台湾香港澳门</span>
+  <span class="s">&#39;EUC_KR&#39;</span><span class="p">,</span>                 <span class="c"># 韩语</span>
+  <span class="s">&#39;EUC_JP&#39;</span><span class="p">,</span> <span class="s">&#39;Shift_JIS&#39;</span><span class="p">,</span>    <span class="c"># 日语</span>
+  <span class="s">&#39;KOI8-R&#39;</span><span class="p">,</span> <span class="s">&#39;Windows-1251&#39;</span><span class="p">,</span> <span class="c"># 俄语</span>
+  <span class="s">&#39;iso-8859-5&#39;</span><span class="p">,</span>             <span class="c"># 斯拉夫语系(保加利亚语,Byelorussian语,马其顿语 ...</span></pre></div> </div>
+				</li>
+					</ol>
+	</dl>
+
+	<p class="paginator">
+		</p>
+	</section>
+
+	</body>
+</html>
