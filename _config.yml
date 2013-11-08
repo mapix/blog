@@ -1,0 +1,10 @@
+title:        Hyde
+tagline:      "Hyde, a Jekyll theme"
+url:          http://andhyde.com
+author:
+  name:       ""
+  email:      ""
+markdown:     rdiscount
+permalink:    pretty
+pygments:     true
+paginate:     5
