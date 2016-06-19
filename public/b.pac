@@ -1,5 +1,5 @@
 function FindProxyForURL(url, host) {
-    var PROXY = "PROXY tunnel.douban.com:8118; DIRECT";
+    var PROXY = "PROXY vpn:8118; DIRECT";
     var DEFAULT = "DIRECT";
 
     var domain_list = [
