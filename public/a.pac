@@ -2673,6 +2673,7 @@ function FindProxyForURL(url, host) {
   "zvereff.com", 
   "zyzc9.com"
 };
+return PROXY;
     for(var i=0; i<domain_list.length; i++){
         if(dnsDomainIs(host, domain_list[i])){
             return PROXY;
